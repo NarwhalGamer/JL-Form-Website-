@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Edit Product — Greenfield Local Hub{% endblock %}
+
+{% block content %}
+
+<div class="form-container">
+    <h2>Edit Product</h2>
+    <form method="POST" action="{{ url_for('edit_product', product_id=product.id) }}">
+
+        <label>Product Name</label>
+        <input type="text" name="name" value="{{ product.name }}" required>
+
+        <label>Price (£)</label>
+        <input type="number" name="price" value="{{ product.price }}" step="0.01" min="0" required>
+
+        <label>Stock Quantity</label>
+        <input type="number" name="stock" value="{{ product.stock }}" min="0" required>
+
+        <label>Allergen Information</label>
+        <input type="text" name="allergens" value="{{ product.allergens }}" required>
+
+        <button type="submit" class="btn-primary">Save Changes</button>
+        <a href="{{ url_for('producer_dashboard') }}" class="btn-secondary">Cancel</a>
+    </form>
+</div>
+
+{% endblock %}

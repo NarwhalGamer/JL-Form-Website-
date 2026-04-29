@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard — Greenfield Local Hub{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-layout">
+
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar">
+        <h3>Admin Panel</h3>
+        <nav>
+            <a href="#" class="sidebar-link active" onclick="showTab('approvals')">Pending Approvals</a>
+            <a href="#" class="sidebar-link" onclick="showTab('orders')">Orders & Deliveries</a>
+            <a href="#" class="sidebar-link" onclick="showTab('users')">Manage Users</a>
+            <a href="#" class="sidebar-link" onclick="showTab('reports')">Reports</a>
+            <a href="{{ url_for('logout') }}" class="sidebar-link danger">Logout</a>
+        </nav>
+    </aside>
+
+    <!-- Main content -->
+    <div class="dashboard-main">
+
+        <!-- Pending approvals tab -->
+        <section id="approvals" class="tab-section">
+            <h2>Pending Product Approvals</h2>
+            {% if pending_products %}
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Producer</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Allergens</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in pending_products %}
+                            <tr>
+                                <td>{{ product.name }}</td>
+                                <td>{{ product.producer.name }}</td>
+                                <td>{{ product.category }}</td>
+                                <td>£{{ "%.2f"|format(product.price) }}</td>
+                                <td>{{ product.allergens }}</td>
+                                <td>
+                                    <a href="{{ url_for('approve_product', product_id=product.id) }}" class="btn-primary">Approve</a>
+                                    <a href="{{ url_for('reject_product', product_id=product.id) }}" class="btn-danger">Reject</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No products awaiting approval.</p>
+            {% endif %}
+        </section>
+
+        <!-- Orders and deliveries tab -->
+        <section id="orders" class="tab-section" style="display:none;">
+            <h2>Orders & Deliveries</h2>
+            {% if orders %}
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                            <tr>
+                                <td>#{{ order.id }}</td>
+                                <td>{{ order.user.name }}</td>
+                                <td>{{ order.order_type | capitalize }}</td>
+                                <td>{{ order.date.strftime('%d %b %Y') }}</td>
+                                <td>£{{ "%.2f"|format(order.total) }}</td>
+                                <td>
+                                    <span class="status-badge status-{{ order.status }}">
+                                        {{ order.status | capitalize }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('update_order_status', order_id=order.id) }}" class="btn-secondary">Update</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No orders yet.</p>
+            {% endif %}
+        </section>
+
+        <!-- Manage Users tab -->
+        <section id="users" class="tab-section" style="display:none;">
+            <h2>Manage Users</h2>
+            {% if users %}
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Joined</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                            <tr>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    <span class="status-badge status-{{ user.role }}">
+                                        {{ user.role | capitalize }}
+                                    </span>
+                                </td>
+                                <td>{{ user.created_at.strftime('%d %b %Y') }}</td>
+                                <td>
+                                    <a href="{{ url_for('delete_user', user_id=user.id) }}" class="btn-danger">Remove</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No users found.</p>
+            {% endif %}
+        </section>
+
+        <!-- Reports tab -->
+        <section id="reports" class="tab-section" style="display:none;">
+            <h2>Reports</h2>
+            <div class="dashboard-form">
+                <div class="report-stats">
+                    <div class="stat-card">
+                        <h3>Total Orders</h3>
+                        <p class="stat-number">{{ total_orders }}</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Revenue</h3>
+                        <p class="stat-number">£{{ "%.2f"|format(total_revenue) }}</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Users</h3>
+                        <p class="stat-number">{{ total_users }}</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Live Products</h3>
+                        <p class="stat-number">{{ total_products }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+{% endblock %}

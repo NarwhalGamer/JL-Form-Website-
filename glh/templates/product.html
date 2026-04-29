@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }} — Greenfield Local Hub{% endblock %}
+
+{% block content %}
+
+<div class="product-detail-container">
+
+    <!-- Breadcrumb -->
+    <p class="breadcrumb">
+        <a href="{{ url_for('index') }}">Home</a> ›
+        <a href="{{ url_for('products') }}">Browse Products</a> ›
+        {{ product.name }}
+    </p>
+
+    <!-- Product detail -->
+    <div class="product-detail">
+
+<!-- Product image -->
+        <div class="product-detail-image">
+            {% if product.image %}
+                <img src="{{ url_for('static', filename='uploads/' + product.image) }}" alt="{{ product.name }}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
+            {% else %}
+                <span>No Image</span>
+            {% endif %}
+        </div>
+
+        <!-- Product info -->
+        <div class="product-detail-info">
+            <p class="product-producer-link">
+                {{ product.producer.name }}
+            </p>
+            <h1>{{ product.name }}</h1>
+            <p class="product-detail-price">£{{ "%.2f"|format(product.price) }}</p>
+
+            {% if product.stock > 0 %}
+                <p class="stock-status in-stock">In Stock — {{ product.stock }} available</p>
+            {% else %}
+                <p class="stock-status out-of-stock">Out of Stock</p>
+            {% endif %}
+
+            <p class="product-detail-description">{{ product.description }}</p>
+
+            <!-- Allergen info — required by FSA regulations -->
+            <div class="allergen-box">
+                <strong>Allergen Information:</strong> {{ product.allergens }}
+            </div>
+
+            {% if product.stock > 0 %}
+                <form method="POST" action="{{ url_for('add_to_basket', product_id=product.id) }}">
+                    <div class="quantity-selector">
+                        <label>Quantity:</label>
+                        <button type="button" onclick="changeQty(-1)">−</button>
+                        <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}">
+                        <button type="button" onclick="changeQty(1)">+</button>
+                    </div>
+                    <div class="product-detail-actions">
+                        <button type="submit" class="btn-primary">Add to Basket</button>
+                        <a href="{{ url_for('products') }}" class="btn-secondary">← Continue Shopping</a>
+                    </div>
+                </form>
+            {% else %}
+                <button class="btn-secondary" disabled>Out of Stock</button>
+                <a href="{{ url_for('products') }}" class="btn-secondary">← Continue Shopping</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- About the producer -->
+    <div class="producer-about">
+        <h3>About {{ product.producer.name }}</h3>
+        <p>{{ product.producer.description }}</p>
+        <p class="producer-location">📍 {{ product.producer.location }}</p>
+    </div>
+
+</div>
+
+{% endblock %}

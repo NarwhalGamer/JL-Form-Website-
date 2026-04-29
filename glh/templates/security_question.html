@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Security Question — Greenfield Local Hub{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Security Question</h2>
+    <p style="color:#bdbdbd; margin-bottom:16px;">{{ user.security_question }}</p>
+    <form method="POST" action="{{ url_for('security_question', email=user.email) }}">
+        <label>Your Answer</label>
+        <input type="text" name="answer" placeholder="Enter your answer" required>
+        <button type="submit" class="btn-primary">Verify</button>
+        <p class="form-link"><a href="{{ url_for('forgot_password') }}">Back</a></p>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Order Confirmed — Greenfield Local Hub{% endblock %}
+
+{% block content %}
+
+<div class="confirmation-container">
+    <div class="confirmation-box">
+        <h2>Order Confirmed!</h2>
+        <p>Thanks for your order. Your reference is <strong>#{{ order.id }}</strong>.</p>
+        <br>
+        <p>Fulfilment: <strong>{{ order.order_type | capitalize }}</strong></p>
+        <p>Time slot: <strong>{{ order.time_slot }}</strong></p>
+        <p>Total paid: <strong>£{{ "%.2f"|format(order.total) }}</strong></p>
+        <p>Status: <strong>{{ order.status | capitalize }}</strong></p>
+        <br>
+        <p style="color:#A5D6A7;">You now have <strong>{{ current_user.loyalty_points }}</strong> loyalty points.</p>
+        <br>
+        <a href="{{ url_for('products') }}" class="btn-primary">Continue Shopping</a>
+    </div>
+</div>
+
+{% endblock %}

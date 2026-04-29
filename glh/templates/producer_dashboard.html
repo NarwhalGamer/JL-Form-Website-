@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% block title %}Producer Dashboard — Greenfield Local Hub{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-layout">
+
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar">
+        <h3>Producer Portal</h3>
+        <nav>
+            <a href="#" class="sidebar-link active" onclick="showTab('products')">My Products</a>
+            <a href="#" class="sidebar-link" onclick="showTab('add-product')">Add New Product</a>
+            <a href="#" class="sidebar-link" onclick="showTab('orders')">Incoming Orders</a>
+            <a href="{{ url_for('logout') }}" class="sidebar-link danger">Logout</a>
+        </nav>
+    </aside>
+
+    <!-- Main content -->
+    <div class="dashboard-main">
+
+        <!-- My Products tab -->
+        <section id="products" class="tab-section">
+            <div class="dashboard-section-header">
+                <h2>My Products</h2>
+            </div>
+
+            {% if products %}
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                            <tr>
+                                <td>{{ product.name }}</td>
+                                <td>{{ product.category }}</td>
+                                <td>£{{ "%.2f"|format(product.price) }}</td>
+                                <td>{{ product.stock }}</td>
+                                <td>
+                                    <span class="status-badge status-{{ product.status }}">
+                                        {{ product.status | capitalize }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('edit_product', product_id=product.id) }}" class="btn-secondary">Edit</a>
+                                    <a href="{{ url_for('delete_product', product_id=product.id) }}" class="btn-danger">Remove</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>You have no products listed yet.</p>
+            {% endif %}
+        </section>
+
+<!-- Add New Product tab -->
+        <section id="add-product" class="tab-section" style="display:none;">
+            <h2>Add New Product</h2>
+            <form method="POST" action="{{ url_for('add_product') }}" class="dashboard-form" enctype="multipart/form-data">
+
+                <label>Product Name</label>
+                <input type="text" name="name" placeholder="e.g. Free Range Eggs" required>
+
+                <label>Description</label>
+                <textarea name="description" placeholder="Describe your product..." rows="3"></textarea>
+
+                <div class="form-row">
+                    <div>
+                        <label>Price (£)</label>
+                        <input type="number" name="price" placeholder="0.00" step="0.01" min="0" required>
+                    </div>
+                    <div>
+                        <label>Stock Quantity</label>
+                        <input type="number" name="stock" placeholder="0" min="0" required>
+                    </div>
+                </div>
+
+                <label>Category</label>
+                <select name="category" id="category-select" onchange="toggleNewCategory()">
+                    <option value="">Select a category</option>
+                    <option value="Dairy & Eggs">Dairy & Eggs</option>
+                    <option value="Bakery">Bakery</option>
+                    <option value="Honey">Honey</option>
+                    <option value="Vegetables">Vegetables</option>
+                    <option value="Meat">Meat</option>
+                    <option value="Drinks">Drinks</option>
+                    <option value="new">+ Add new category</option>
+                </select>
+                <input type="text" name="new_category" id="new-category" placeholder="Type new category name" style="display:none; margin-top:8px;">
+
+                <!-- Allergen info is required by FSA regulations -->
+                <label>Allergen Information</label>
+                <input type="text" name="allergens" placeholder="e.g. Milk, Eggs or None" required>
+
+                <label>Product Image (optional)</label>
+                <input type="file" name="image" accept="image/*">
+
+                <button type="submit" class="btn-primary">Submit for Approval</button>
+            </form>
+        </section>
+
+        <!-- Incoming Orders tab -->
+        <section id="orders" class="tab-section" style="display:none;">
+            <h2>Incoming Orders</h2>
+            {% if orders %}
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                            <tr>
+                                <td>#{{ order.id }}</td>
+                                <td>{{ order.order_type | capitalize }}</td>
+                                <td>{{ order.date.strftime('%d %b %Y') }}</td>
+                                <td>£{{ "%.2f"|format(order.total) }}</td>
+                                <td>
+                                    <span class="status-badge status-{{ order.status }}">
+                                        {{ order.status | capitalize }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('mark_order_ready', order_id=order.id) }}" class="btn-primary">Mark Ready</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No incoming orders yet.</p>
+            {% endif %}
+        </section>
+
+    </div>
+</div>
+
+{% endblock %}

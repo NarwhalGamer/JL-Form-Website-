@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Home — Greenfield Local Hub{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+    <h1>Fresh, Local, Traceable</h1>
+    <p>Shop directly from local farmers and food producers in your area. Know exactly where your food comes from.</p>
+    <a href="{{ url_for('products') }}" class="btn-primary">Shop Now</a>
+</section>
+
+<section class="about-section">
+    <h2>Why Buy Local?</h2>
+    <div class="about-grid">
+        <div class="about-card">
+            <h3>Freshly Sourced</h3>
+            <p>Our food comes straight from nearby farms, so it hasn't been travelling for days before it gets to you.</p>
+        </div>
+        <div class="about-card">
+            <h3>Know Your Producer</h3>
+            <p>You can see exactly which farm your food comes from. No guessing involved.</p>
+        </div>
+        <div class="about-card">
+            <h3>Better for the Planet</h3>
+            <p>Because it's local, it doesn't travel as far, so it has less impact on the environment.</p>
+        </div>
+    </div>
+</section>
+
+<section class="producers-section">
+    <h2>Meet Our Producers</h2>
+    {% if producers %}
+        <div class="producer-grid">
+            {% for producer in producers %}
+                <div class="producer-card">
+                    <h3>{{ producer.name }}</h3>
+                    <p class="producer-location">{{ producer.location }}</p>
+                    <p>{{ producer.description }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Producers coming soon, check back shortly!</p>
+    {% endif %}
+</section>
+
+{% endblock %}

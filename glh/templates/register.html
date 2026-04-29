@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Register — Greenfield Local Hub{% endblock %}
+
+{% block content %}
+
+<div class="form-container">
+    <h2>Create an Account</h2>
+    <form method="POST" action="{{ url_for('register') }}">
+        <label>Full Name</label>
+        <input type="text" name="name" placeholder="e.g. Jane Smith" required>
+
+        <label>Email Address</label>
+        <input type="email" name="email" placeholder="e.g. jane@email.com" required>
+
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Choose a password" required>
+
+        <label>Confirm Password</label>
+        <input type="password" name="confirm_password" placeholder="Repeat your password" required>
+
+        <label>Security Question</label>
+        <select name="security_question" required>
+            <option value="">Choose a question</option>
+            <option value="What was the name of your first pet?">What was the name of your first pet?</option>
+            <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+            <option value="What was the name of your first school?">What was the name of your first school?</option>
+            <option value="What is your favourite book?">What is your favourite book?</option>
+            <option value="What town were you born in?">What town were you born in?</option>
+        </select>
+
+        <label>Security Answer</label>
+        <input type="text" name="security_answer" placeholder="Your answer" required>
+
+        <button type="submit" class="btn-primary">Create Account</button>
+        <p class="form-link">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+    </form>
+</div>
+
+{% endblock %}

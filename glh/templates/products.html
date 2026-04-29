@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Browse Products — Greenfield Local Hub{% endblock %}
+
+{% block content %}
+
+<div class="page-layout">
+
+    <!-- Filter panel on the left -->
+    <aside class="filter-panel">
+        <h3>Filter Products</h3>
+        <form method="GET" action="{{ url_for('products') }}">
+
+            <label>Category</label>
+            <select name="category">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                    <option value="{{ category[0] }}"
+                        {% if request.args.get('category') == category[0] %}selected{% endif %}>
+                        {{ category[0] }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label>Producer</label>
+            <select name="producer">
+                <option value="">All Producers</option>
+                {% for producer in producers %}
+                    <option value="{{ producer.id }}"
+                        {% if request.args.get('producer') == producer.id|string %}selected{% endif %}>
+                        {{ producer.name }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label>Max Price</label>
+            <input type="number" name="max_price" placeholder="e.g. £10.00"
+                   value="{{ request.args.get('max_price', '') }}" min="0" step="0.01">
+
+            <button type="submit" class="btn-primary">Apply Filters</button>
+        </form>
+    </aside>
+
+    <!-- Product grid on the right -->
+    <section class="product-section">
+        <h2>All Products</h2>
+
+        {% if products %}
+            <div class="product-grid">
+                {% for product in products %}
+                    <div class="product-card">
+                        <div class="product-image">
+                            {% if product.image %}
+                                <img src="{{ url_for('static', filename='uploads/' + product.image) }}" alt="{{ product.name }}">
+                            {% else %}
+                                <span>No Image</span>
+                            {% endif %}
+                        </div>
+                        <div class="product-info">
+                            <p class="product-producer">{{ product.producer.name }}</p>
+                            <a href="{{ url_for('product_detail', product_id=product.id) }}">
+                                <h3 class="product-name">{{ product.name }}</h3>
+                            </a>
+                            <p class="product-price">£{{ "%.2f"|format(product.price) }}</p>
+                            {% if product.stock > 0 %}
+                                <form method="POST" action="{{ url_for('add_to_basket', product_id=product.id) }}">
+                                    <button type="submit" class="btn-primary">Add to Basket</button>
+                                </form>
+                            {% else %}
+                                <button class="btn-secondary" disabled>Out of Stock</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No products found — try adjusting your filters.</p>
+        {% endif %}
+    </section>
+
+</div>
+
+{% endblock %}

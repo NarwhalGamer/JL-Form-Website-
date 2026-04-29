@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}My Account — Greenfield Local Hub{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-layout">
+
+    <aside class="dashboard-sidebar">
+        <h3>My Account</h3>
+        <nav>
+            <a href="#" class="sidebar-link active" onclick="showTab('details')">My Details</a>
+            <a href="#" class="sidebar-link" onclick="showTab('orders')">Order History</a>
+            <a href="{{ url_for('logout') }}" class="sidebar-link danger">Logout</a>
+        </nav>
+    </aside>
+
+    <div class="dashboard-main">
+
+        <!-- My Details tab -->
+        <section id="details" class="tab-section">
+            <h2>My Details</h2>
+            <div class="dashboard-form">
+                <p style="color:#A5D6A7;"><strong>Name:</strong>
+                    <span style="color:#e0e0e0;">{{ current_user.name }}</span>
+                </p>
+                <br>
+                <p style="color:#A5D6A7;"><strong>Email:</strong>
+                    <span style="color:#e0e0e0;">{{ current_user.email }}</span>
+                </p>
+                <br>
+                <p style="color:#A5D6A7;"><strong>Loyalty Points:</strong>
+                    <span style="color:#e0e0e0;">
+                        {{ current_user.loyalty_points }} points
+                        {% if current_user.loyalty_points >= 100 %}
+                            (worth £{{ (current_user.loyalty_points // 100) * 5 }}.00 off your next order!)
+                        {% else %}
+                            ({{ 100 - current_user.loyalty_points }} more points until your next reward)
+                        {% endif %}
+                    </span>
+                </p>
+                <br>
+                <p style="color:#A5D6A7;"><strong>Member Since:</strong>
+                    <span style="color:#e0e0e0;">{{ current_user.created_at.strftime('%d %b %Y') }}</span>
+                </p>
+                <br>
+                <br>
+
+                <!-- GDPR account deletion -->
+                <form method="POST" action="{{ url_for('delete_account') }}" onsubmit="return confirm('Are you sure? This will permanently delete your account and all your data.')">
+                    <button type="submit" class="btn-danger">Delete My Account</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Order History tab -->
+        <section id="orders" class="tab-section" style="display:none;">
+            <h2>Order History</h2>
+            {% if orders %}
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                            <tr>
+                                <td>#{{ order.id }}</td>
+                                <td>{{ order.order_type | capitalize }}</td>
+                                <td>{{ order.date.strftime('%d %b %Y') }}</td>
+                                <td>£{{ "%.2f"|format(order.total) }}</td>
+                                <td>
+                                    <span class="status-badge status-{{ order.status }}">
+                                        {{ order.status | capitalize }}
+                                    </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p style="color:#bdbdbd;">You haven't placed any orders yet. <a href="{{ url_for('products') }}" style="color:#A5D6A7;">Start shopping!</a></p>
+            {% endif %}
+        </section>
+
+    </div>
+</div>
+
+{% endblock %}

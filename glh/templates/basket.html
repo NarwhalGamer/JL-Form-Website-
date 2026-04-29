@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}Your Basket — Greenfield Local Hub{% endblock %}
+
+{% block content %}
+
+<div class="basket-container">
+    <h2>Your Basket</h2>
+
+    {% if basket_items %}
+        <div class="basket-layout">
+
+            <div class="basket-items">
+                {% for item in basket_items %}
+                    <div class="basket-item">
+                        <div class="basket-item-info">
+                            <h3>{{ item.name }}</h3>
+                            <p>£{{ "%.2f"|format(item.price) }} each</p>
+                        </div>
+                        <div class="basket-item-right">
+                            <p class="basket-item-subtotal">£{{ "%.2f"|format(item.price * item.quantity) }}</p>
+                            <p>Qty: {{ item.quantity }}</p>
+                            <a href="{{ url_for('remove_from_basket', product_id=item.id) }}" class="btn-danger">Remove</a>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <div class="basket-totals">
+                    <p>Subtotal: <strong>£{{ "%.2f"|format(total) }}</strong></p>
+                    <p>Delivery: <strong>£2.50</strong></p>
+                    <p class="basket-total">Total: <strong>£{{ "%.2f"|format(total + 2.50) }}</strong></p>
+                </div>
+            </div>
+
+            <div class="checkout-form">
+                <h3>Checkout</h3>
+                <form method="POST" action="{{ url_for('place_order') }}">
+
+                    <label>Fulfilment</label>
+                    <div class="fulfilment-toggle">
+                        <input type="radio" name="order_type" id="delivery" value="delivery" checked>
+                        <label for="delivery" class="toggle-btn">Delivery</label>
+                        <input type="radio" name="order_type" id="collection" value="collection">
+                        <label for="collection" class="toggle-btn">Collection</label>
+                    </div>
+
+                    <label>Date</label>
+                    <input type="date" name="date" required>
+
+                    <label>Time Slot</label>
+                    <select name="time_slot">
+                        <option value="Morning">Morning</option>
+                        <option value="Afternoon">Afternoon</option>
+                    </select>
+
+                    <label>Full Name</label>
+                    <input type="text" name="full_name" placeholder="e.g. Jane Smith" required>
+
+                    <label>Address</label>
+                    <input type="text" name="address" placeholder="e.g. 12 Greenfield Road" required>
+
+                    <label>Town</label>
+                    <input type="text" name="town" placeholder="Greenfield" required>
+
+                    <label>Postcode</label>
+                    <input type="text" name="postcode" placeholder="e.g. GF1 2AB" required>
+
+                    <label>Card Number</label>
+                    <input type="text" name="card_number" placeholder="**** **** **** ****" maxlength="19" required>
+
+                    <div class="card-row">
+                        <div>
+                            <label>Expiry</label>
+                            <input type="text" name="expiry" id="expiry" placeholder="MM/YY" maxlength="5" required>
+                        </div>
+                        <div>
+                            <label>CVV</label>
+                            <input type="text" name="cvv" placeholder="***" maxlength="3" required>
+                        </div>
+                    </div>
+
+                    {% if current_user.is_authenticated and current_user.loyalty_points >= 100 %}
+                        <div class="loyalty-box">
+                            <p>You have <strong>{{ current_user.loyalty_points }}</strong> loyalty points worth <strong>£{{ (current_user.loyalty_points // 100) * 5 }}.00</strong> off!</p>
+                            <div class="loyalty-toggle">
+                                <input type="checkbox" name="use_points" id="use_points" value="yes">
+                                <label for="use_points">Redeem points for a discount</label>
+                            </div>
+                        </div>
+                    {% elif current_user.is_authenticated %}
+                        <div class="loyalty-box">
+                            <p>You have <strong>{{ current_user.loyalty_points }}</strong> loyalty points. Earn <strong>{{ 100 - current_user.loyalty_points }}</strong> more for £5 off!</p>
+                        </div>
+                    {% endif %}
+
+                    <button type="submit" class="btn-primary">
+                        Place Order — £{{ "%.2f"|format(total + 2.50) }}
+                    </button>
+
+                </form>
+            </div>
+
+        </div>
+
+    {% else %}
+        <p>Your basket is empty. <a href="{{ url_for('products') }}" style="color:#A5D6A7;">Browse products</a> to get started.</p>
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Our Producers — Greenfield Local Hub{% endblock %}
+
+{% block content %}
+
+<h2 style="color:#A5D6A7; margin-bottom:24px;">Our Producers</h2>
+
+<div class="producer-grid">
+    {% for producer in producers %}
+        <div class="producer-card">
+            <h3>{{ producer.name }}</h3>
+            <p class="producer-location">📍 {{ producer.location }}</p>
+            <p>{{ producer.description }}</p>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
